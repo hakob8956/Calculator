@@ -1,0 +1,33 @@
+﻿Build started 26.02.2018 22:36:29.
+     1>Project "C:\Users\hakob\Desktop\calc_Expression 2018 02 22\calc_Expression\calc_Expression.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\calc_Expression.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\calc_Expression.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt calc_ExpressionDlg.cpp
+         calc_ExpressionDlg.cpp
+     1>c:\users\hakob\desktop\calc_expression 2018 02 22\calc_expression\calc_expressiondlg.cpp(335): warning C4101: 'f' : unreferenced local variable
+       ResourceCompile:
+         All outputs are up-to-date.
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\hakob\Desktop\calc_Expression 2018 02 22\Debug\calc_Expression.exe" /INCREMENTAL /NOLOGO /MANIFEST /ManifestFile:"Debug\calc_Expression.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\hakob\Desktop\calc_Expression 2018 02 22\Debug\calc_Expression.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\hakob\Desktop\calc_Expression 2018 02 22\Debug\calc_Expression.lib" /MACHINE:X86 Debug\calc_Expression.res
+         Debug\calc_Expression.exe.embed.manifest.res
+         Debug\calc_Expression.obj
+         Debug\calc_ExpressionDlg.obj
+         Debug\stdafx.obj
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\calc_Expression.exe.embed.manifest" /manifest Debug\calc_Expression.exe.intermediate.manifest "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Include\Manifest\dpiaware.manifest"
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         calc_Expression.vcxproj -> C:\Users\hakob\Desktop\calc_Expression 2018 02 22\Debug\calc_Expression.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\calc_Expression.unsuccessfulbuild".
+         Touching "Debug\calc_Expression.lastbuildstate".
+     1>Done Building Project "C:\Users\hakob\Desktop\calc_Expression 2018 02 22\calc_Expression\calc_Expression.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.44
