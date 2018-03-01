@@ -27,6 +27,11 @@ public:
 	float Calc_Expretion(CString st);
 	CString build_string(CString stt, int i, int n);
 	CString delete_bracket(CString stt);
+	CString Insert_Variable(CString stt,CString *var,CString *let,int n);
+	int Check_Systax(CString st);
+	void Return_Error(CString st,int err);
+	
+	CString Set_Variable(CString stt);
 	
 protected:
 	HICON m_hIcon;
@@ -42,6 +47,6 @@ public:
 	afx_msg void OnBnClickedOk();
 	CString m_stExpr;
 	afx_msg void OnBnClickedButtonCalc();
-	double m_Res;
+	CString m_stError;
 	CString m_stResult;
 };

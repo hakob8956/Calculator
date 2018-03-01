@@ -6,7 +6,7 @@
 #include "calc_Expression.h"
 #include "calc_ExpressionDlg.h"
 #include "afxdialogex.h"
-
+#include <atlconv.h>
 #include <string>
 
 using namespace std;
@@ -56,7 +56,7 @@ END_MESSAGE_MAP()
 Ccalc_ExpressionDlg::Ccalc_ExpressionDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(Ccalc_ExpressionDlg::IDD, pParent)
 	, m_stExpr(_T(""))
-	, m_Res(0)
+	, m_stError(_T(""))
 	, m_stResult(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -66,7 +66,7 @@ void Ccalc_ExpressionDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_EXPRESION, m_stExpr);
-	DDX_Text(pDX, IDC_EDIT_RES, m_Res);
+	DDX_Text(pDX, IDC_EDIT_RES, m_stError);
 	DDX_Text(pDX, IDC_STATIC_RESULT, m_stResult);
 }
 
@@ -187,8 +187,15 @@ void Ccalc_ExpressionDlg::OnBnClickedButtonCalc()
 	UpdateData(TRUE);
 
 	CString st0 = L"";
-	st0 = m_stExpr;
+	st0 = Set_Variable(delete_bracket(m_stExpr));
+	if (Check_Systax(st0) != 0)
+	{
+		Return_Error(st0,Check_Systax(st0));
+		return;
+	}
+	
 	float a =  Calc_Expretion(st0);
+
 	CString s;
 	s.Format(L"%.6f", a );
 
@@ -197,10 +204,133 @@ void Ccalc_ExpressionDlg::OnBnClickedButtonCalc()
 
 
 }
+
+//Enum
+enum Errors 
+{
+	ErLetters = -1,
+	ErBracket = -2,
+
+};
+void Ccalc_ExpressionDlg::Return_Error(CString st,int err)
+{
+	switch(err)
+	{
+		case ErLetters:
+			m_stError = "Error Letters";
+			break;
+		case ErBracket:
+			m_stError = "Error Bracket";
+			break;
+
+	}
+}
+int Ccalc_ExpressionDlg::Check_Systax(CString st)
+{
+	CString stt = st;
+	CString st1,s;
+	int is = 0, ie = 0, i;
+
+
+
+	while(true)//Check Bracket
+	{	
+		if(ie == -1 && is == -1)
+			break;
+		if((ie != -1 || is != -1) && (ie == -1 || is == -1))
+			return ErBracket;
+		ie = stt.Find(')');
+		st1 = stt.Left(ie + 1);
+		is = st1.ReverseFind('(');
+		stt.Delete(ie);
+		stt.Delete(is);
+	}
+
+	bool b1, b2, b3;
+
+	for (i = 0;i<stt.GetLength();i++)//Check !Letters
+	{
+		b1 =  stt.GetAt(i) == '+' || stt.GetAt(i) == '-';
+		b2  = stt.GetAt(i) == '*' || stt.GetAt(i) == '/';
+		b3 = stt.GetAt(i) == '.' || stt.GetAt(i) == ')' || stt.GetAt(i) == '(';
+		if(!(isdigit(stt.GetAt(i)) || b1 || b2 || b3))
+			return ErLetters;
+	}
+	return 0;
+	
+}
+CString Ccalc_ExpressionDlg::Set_Variable(CString stt)//TODO FIX ERROR-->CHECK_SYNTAX()
+{
+	CString st =stt;
+	CString lett[10] = {L""};
+	CString var[10] = {L""};
+	int k = 0,i = 0;
+	CString sLett = L"", sVar = L"";
+	bool unl = false;
+
+	if (st.GetAt (0) >= 'A' && st.GetAt(0)  <= 'Z' || st.GetAt(0)  >= 'a' && st.GetAt(0)  <= 'z') 
+	{ 
+		while(st[i] != '\n')
+		{
+			if(unl == false)
+			{
+				if(st.GetAt(i) == '=')
+				{
+					unl = true;
+				}
+				else 
+				{
+					sLett += st.GetAt(i);
+				}
+			}
+			else if(unl = true)
+			{
+				if(st.GetAt(i) == ';')
+				{
+					var[k] = sVar;
+					lett[k] = sLett;
+					sVar = L"";
+					sLett = L"";
+					k ++;
+					unl = false;
+				}
+				else if(isdigit(st.GetAt(i)))
+				{		
+					sVar += st.GetAt(i);
+				}
+			}
+			i++;
+		
+		}
+		st.Delete(0,i);
+	    return Insert_Variable(st,var,lett,k);
+	}
+
+	return st;
+
+}
+
+
 //
+CString Ccalc_ExpressionDlg::Insert_Variable(CString stt,CString *var,CString *let,int n )
+{
+	CString st = stt;
 
-
-
+	for (int i = 0;i < st.GetLength(); i++)
+	{
+		for (int j = 0;j < n; j++)
+		{
+			if(st.GetAt(i) == let[j])
+			{
+				st.Delete(i);
+				st.Insert(i,var[j]);
+				
+			}
+		}
+	}
+	return st;
+}
+//
 CString Ccalc_ExpressionDlg::build_string(CString stt,int i,int n)
 {
 	int k;
@@ -235,13 +365,14 @@ CString Ccalc_ExpressionDlg:: delete_bracket(CString stt)
 
 float Ccalc_ExpressionDlg::Calc_Expretion(CString st)
 {
+	
 
 	CString stt = L"", st1 = L"";
 	CString s = L"";
 	CString floatString = L"";
 	CString sValue = L"";
 
-	stt = delete_bracket(st);
+	stt = st;
 
 	int is, ie = 0, i;
 	float value; 
@@ -325,14 +456,14 @@ float Ccalc_ExpressionDlg::unit_Expretion(CString st)
 	int i, j, k,temp = 0,l = 1;
 	float answer = 0;
 	int jo, js, je;
-
+	m_stResult = L"";
 	char chOp[] = {'^','*','/','+','-'};
 	char  a[20] = {' '}, b[20] = {' '};
 	float op1, op2;
 	int y=0;
 	int z = 0;
 	CString stt = st;
-	int f;
+//	int f;
 	int noop = 0;
 	BOOL bs = TRUE,Go = FALSE;
 	while(bs)
@@ -450,7 +581,7 @@ float Ccalc_ExpressionDlg::unit_Expretion(CString st)
 			case '/':
 				if(op1 == 0)
 				{
-					m_stResult = L"Dived Error";
+					m_stError = L"Dived Error";
 					return -1;
 				}
 				if(op1 != 0)
