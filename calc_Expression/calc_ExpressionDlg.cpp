@@ -112,9 +112,11 @@ BOOL Ccalc_ExpressionDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	//m_stExpr = L"(2+5)*2";
-	 m_stExpr = L"1*((-3 + 7)*(4 - 8) + 2 * (25 - 25))";
+	CString stt = L"a = 1\r\nb = 2\r\na + b";
+//	 m_stExpr = L"1*((-3 + 7)*(4 - 8) + 2 * (25 - 25))";
 	//m_stExpr = L"(5-2)+2";//-3 + 2//-1
 
+	 m_stExpr = stt;
 	UpdateData(FALSE);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -187,7 +189,13 @@ void Ccalc_ExpressionDlg::OnBnClickedButtonCalc()
 	UpdateData(TRUE);
 
 	CString st0 = L"";
-	st0 = Set_Variable(delete_bracket(m_stExpr));
+	st0 = m_stExpr;
+	m_stExpr = st0;
+
+	st0 = delete_bracket(st0);
+	st0 = Set_Variable(st0);
+//...........
+
 	if (Check_Systax(st0) != 0)
 	{
 		Return_Error(st0,Check_Systax(st0));
@@ -224,6 +232,7 @@ void Ccalc_ExpressionDlg::Return_Error(CString st,int err)
 			break;
 
 	}
+	UpdateData(FALSE);
 }
 int Ccalc_ExpressionDlg::Check_Systax(CString st)
 {
@@ -262,15 +271,21 @@ int Ccalc_ExpressionDlg::Check_Systax(CString st)
 CString Ccalc_ExpressionDlg::Set_Variable(CString stt)//TODO FIX ERROR-->CHECK_SYNTAX()
 {
 	CString st =stt;
-	CString lett[10] = {L""};
+	char lett[10] = {' '};
 	CString var[10] = {L""};
-	int k = 0,i = 0;
-	CString sLett = L"", sVar = L"";
+	int k = 0,i = 0, o = 0,u=0;
+	CString  sVar = L"";
+	char sLett = ' ';
 	bool unl = false;
 
 	if (st.GetAt (0) >= 'A' && st.GetAt(0)  <= 'Z' || st.GetAt(0)  >= 'a' && st.GetAt(0)  <= 'z') 
 	{ 
-		while(st[i] != '\n')
+		for (int q = 0;q < st.GetLength()+1; q++)//stuguma qanak@ toxeri
+		{
+			if(st.GetAt(q) == '\r')
+				o++;
+		}
+		while(u < o)
 		{
 			if(unl == false)
 			{
@@ -280,18 +295,20 @@ CString Ccalc_ExpressionDlg::Set_Variable(CString stt)//TODO FIX ERROR-->CHECK_S
 				}
 				else 
 				{
-					sLett += st.GetAt(i);
+					sLett = st.GetAt(i);
 				}
 			}
 			else if(unl = true)
 			{
-				if(st.GetAt(i) == ';')
+				if(st.GetAt(i) == '\r' || st.GetAt(i) == ';')
 				{
 					var[k] = sVar;
 					lett[k] = sLett;
 					sVar = L"";
-					sLett = L"";
+					sLett = ' ';
 					k ++;
+					
+					u++;
 					unl = false;
 				}
 				else if(isdigit(st.GetAt(i)))
@@ -302,7 +319,7 @@ CString Ccalc_ExpressionDlg::Set_Variable(CString stt)//TODO FIX ERROR-->CHECK_S
 			i++;
 		
 		}
-		st.Delete(0,i);
+		st.Delete(0,i + 1);
 	    return Insert_Variable(st,var,lett,k);
 	}
 
@@ -312,15 +329,23 @@ CString Ccalc_ExpressionDlg::Set_Variable(CString stt)//TODO FIX ERROR-->CHECK_S
 
 
 //
-CString Ccalc_ExpressionDlg::Insert_Variable(CString stt,CString *var,CString *let,int n )
+CString Ccalc_ExpressionDlg::Insert_Variable(CString stt, CString *var, char *let, int n )
 {
 	CString st = stt;
+	for (int s = 0;s < st.GetLength(); s++)
+	{
+		if(st.GetAt(s) == '\r' || st.GetAt(s) == '\n')
+			st.Delete(s);
+	}
 
+	char ch  = ' ';
 	for (int i = 0;i < st.GetLength(); i++)
 	{
+		 ch = (char)st.GetAt(i);
+
 		for (int j = 0;j < n; j++)
 		{
-			if(st.GetAt(i) == let[j])
+			if(ch == let[j])
 			{
 				st.Delete(i);
 				st.Insert(i,var[j]);

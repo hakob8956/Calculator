@@ -27,7 +27,7 @@ public:
 	float Calc_Expretion(CString st);
 	CString build_string(CString stt, int i, int n);
 	CString delete_bracket(CString stt);
-	CString Insert_Variable(CString stt,CString *var,CString *let,int n);
+	CString Insert_Variable(CString stt,CString *var,char *let,int n);
 	int Check_Systax(CString st);
 	void Return_Error(CString st,int err);
 	
